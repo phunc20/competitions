@@ -1,4 +1,5 @@
 trash.*
+.*.swp
 corbeille/
 
 .ipynb_checkpoints/
