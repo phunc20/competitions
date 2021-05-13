@@ -5,3 +5,4 @@ kaggle/birdclef_2021/my_code/testSoundScapes/
 kaggle/birdclef_2021/my_code/trainSoundScapes/
 
 .ipynb_checkpoints/
+.DS_Store
