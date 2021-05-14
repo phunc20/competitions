@@ -1,8 +1,9 @@
 trash.*
 .*.swp
 corbeille/
-kaggle/birdclef_2021/my_code/testSoundScapes/
-kaggle/birdclef_2021/my_code/trainSoundScapes/
+kaggle/birdclef_2021/my_code/local/testSoundScapes/
+kaggle/birdclef_2021/my_code/local/trainSoundScapes/
 
 .ipynb_checkpoints/
 .DS_Store
+__pycache__/
