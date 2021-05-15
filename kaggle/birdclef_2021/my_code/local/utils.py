@@ -1,6 +1,3 @@
-
-
-
 from pathlib import Path
 from tqdm.notebook import tqdm
 import librosa
@@ -12,6 +9,11 @@ import joblib
 
 import random
 import os
+from collections import namedtuple
+
+
+
+
 
 SR = 32_000
 DURATION = 5
@@ -24,7 +26,37 @@ L_birds = sorted(L_birds)
 D_label_index = {label: i for i, label in enumerate(L_birds)}
 D_index_label = {v: k for k, v in D_label_index.items()}
 
+Coordinate = namedtuple("Coordinate", ["longitude", "latitude"])
 
+D_location_coordinate = dict()
+for p in (PATH_DATASET / "test_soundscapes").glob("*_recording_location.txt"):
+    location = p.stem.split("_")[0]
+    with open(p) as f:
+        lines = f.readlines()
+        for line in lines:
+            if line.startswith("Latitude:"):
+                latitude = float(line.split(" ")[1])
+            if line.startswith("Longitude:"):
+                longitude = float(line.split(" ")[1])
+    D_location_coordinate[location] = Coordinate(longitude=longitude, latitude=latitude)
+
+def birdLabel_to_nBirds(label):
+    if label == "nocall":
+        return 0
+    return len(label.split())
+
+def seed_everything(seed=SEED):
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)
+    #torch.manual_seed(seed)
+    #torch.cuda.manual_seed(seed)
+    #torch.backends.cudnn.deterministic = True
+
+def duration(path_ogg):
+    audio, orig_sr = soundfile.read(path_ogg, dtype="float32")
+    audio = librosa.resample(audio, orig_sr, SR, res_type="kaiser_fast")
+    return len(audio) / SR
 
 
 class MelSpecComputer:
@@ -97,10 +129,6 @@ def audio_to_mels(audio,
     mels = standardize_uint8(mel_spec_computer(audio))
     return mels
 
-
-
-
-
 def every_5sec(id_,
                sr=SR,
                resample=True,
@@ -145,6 +173,25 @@ def every_5sec(id_,
         mapping = joblib.delayed(convert_and_save)
         tasks = (mapping(i) for i in range(0, n_samples - n_samples % n_samples_5sec, n_samples_5sec))
         pool(tasks)
+
+def soundscapes_to_npy(is_test=False, n_processes=4):
+    pool = joblib.Parallel(n_processes)
+    mapping = joblib.delayed(every_5sec)
+    if is_test:
+        tasks = list(mapping(id_, save_to=testSoundScapes) for id_ in S_testSoundScapeIDs)
+        #tasks = list(mapping(id_,
+        #                     single_process=False,
+        #                     save_to=testSoundScapes)
+        #             for id_ in S_testSoundScapeIDs)
+    else:
+        tasks = list(mapping(id_, save_to=trainSoundScapes) for id_ in S_trainSoundScapeIDs)
+        #tasks = list(mapping(id_,
+        #                     single_process=False,
+        #                     save_to=trainSoundScapes)
+        #             for id_ in S_trainSoundScapeIDs)
+    pool(tqdm(tasks))
+
+
 
 
 def shortaudio_to_npy(L_ogg_paths,

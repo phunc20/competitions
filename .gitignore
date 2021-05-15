@@ -3,6 +3,8 @@ trash.*
 corbeille/
 kaggle/birdclef_2021/my_code/local/testSoundScapes/
 kaggle/birdclef_2021/my_code/local/trainSoundScapes/
+kaggle/birdclef_2021/my_code/local/train_npy/
+kaggle/birdclef_2021/my_code/local/val_npy/
 
 .ipynb_checkpoints/
 .DS_Store
