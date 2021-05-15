@@ -1,20 +1,3 @@
-#def soundscapes_to_npy(is_test=False, n_processes=4):
-#    pool = joblib.Parallel(n_processes)
-#    mapping = joblib.delayed(every_5sec)
-#    if is_test:
-#        tasks = list(mapping(id_, save_to=testSoundScapes) for id_ in S_testSoundScapeIDs)
-#        #tasks = list(mapping(id_,
-#        #                     single_process=False,
-#        #                     save_to=testSoundScapes)
-#        #             for id_ in S_testSoundScapeIDs)
-#    else:
-#        tasks = list(mapping(id_, save_to=trainSoundScapes) for id_ in S_trainSoundScapeIDs)
-#        #tasks = list(mapping(id_,
-#        #                     single_process=False,
-#        #                     save_to=trainSoundScapes)
-#        #             for id_ in S_trainSoundScapeIDs)
-#    pool(tqdm(tasks))
-
 
 
 
@@ -33,6 +16,15 @@ import os
 SR = 32_000
 DURATION = 5
 SEED = 42
+
+PATH_DATASET = Path.home() / "datasets/kaggle/birdclef-2021"
+L_birds = [path.name for path
+           in (PATH_DATASET / "train_short_audio").iterdir()]
+L_birds = sorted(L_birds)
+D_label_index = {label: i for i, label in enumerate(L_birds)}
+D_index_label = {v: k for k, v in D_label_index.items()}
+
+
 
 
 class MelSpecComputer:
@@ -188,16 +180,23 @@ def into_5sec_npy(ogg_path,
     n_samples_1step = sr * step_in_sec
     save_to.mkdir(exist_ok=True)
 
-    #def convert_and_save(i):
-    #    audio_i = whole_audio[i:i + n_samples_5sec]
-    #    mels_i = audio_to_mels(audio_i)
-    #    path_i = save_to / f"{id_}_{location}_{((i + n_samples_5sec) // n_samples_5sec) * 5}.npy"
-    #    np.save(str(path_i), mels_i)
-
     for i in range(0, n_samples - n_samples_5sec, n_samples_1step):
         audio_i = whole_audio[i:i + n_samples_5sec]
         mels_i = audio_to_mels(audio_i)
         path_i = save_to / f"{sans_ext}_{((i + n_samples_5sec) // n_samples_5sec) * 5}.npy"
         np.save(path_i, mels_i)
-        #np.save(str(path_i), mels_i)
+
+
+def birds_to_ndarray(series):
+    I = np.eye(len(D_label_index))
+    ndarray = np.zeros((len(series), len(D_label_index)))
+    for i, string in enumerate(series.values):
+        if string == "nocall":
+            continue
+        else:
+            L_indices = [D_label_index[label] for label in string.split(" ")]
+            row_i = np.sum(I[L_indices], axis=0)
+            ndarray[i] = row_i
+    return ndarray
+
 
