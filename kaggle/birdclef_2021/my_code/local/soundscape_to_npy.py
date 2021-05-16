@@ -34,7 +34,18 @@ for location, coordinate in D_location_coordinate.items():
     df_train_soundscape.loc[location_filter, "longitude"] = lo
     df_train_soundscape.loc[location_filter, "latitude"] = la
 
+df_train_soundscape[["longitude_x", "longitude_y"]] = cyclicize_series(df_train_soundscape["longitude"], 180, -180)
+
+df_train_soundscape[["month_x", "month_y"]] = cyclicize_series(df_train_soundscape["month"], 12, 0)
+df_train_soundscape[["month", "month_x", "month_y"]]
 
 
+df_train_soundscape["latitude_normalized"] = df_train_soundscape["latitude"] / 90
+
+chosen_features = [
+        "longitude_x",
+        "longitude_y",
+        #"latitude_normalized",
+]
 
 
