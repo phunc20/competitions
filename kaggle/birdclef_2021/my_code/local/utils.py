@@ -12,14 +12,11 @@ import os
 from collections import namedtuple
 
 
-
-
-
 SR = 32_000
 DURATION = 5
 SEED = 42
-
 PATH_DATASET = Path.home() / "datasets/kaggle/birdclef-2021"
+
 L_birds = [path.name for path
            in (PATH_DATASET / "train_short_audio").iterdir()]
 L_birds = sorted(L_birds)
@@ -244,8 +241,8 @@ def save_into_5sec_npy(ogg_path,
     n_samples_1step = sr * step_in_sec
     save_to.mkdir(exist_ok=True)
 
-    #for i in range(0, n_samples - n_samples_5sec, n_samples_1step):
-    for i in range(0, n_samples, n_samples_1step):
+    #for i in range(0, n_samples, n_samples_1step):
+    for i in range(0, n_samples - n_samples_5sec + 1, n_samples_1step):
         audio_i = whole_audio[i:i + n_samples_5sec]
         mels_i = audio_to_mels(audio_i)
         path_i = save_to / f"{sans_ext}_{((i + n_samples_5sec) // n_samples_5sec) * 5}.npy"

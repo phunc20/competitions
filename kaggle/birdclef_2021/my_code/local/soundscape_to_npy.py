@@ -127,6 +127,8 @@ mv_test_tasks = list(mv(str(path), test_npy)
                      for path in tmp_test_npy_paths)
 pool(tqdm(mv_test_tasks))
 
+df_soundscape_train.to_csv("soundscape_train.csv", index=False)
+df_soundscape_val.to_csv("soundscape_val.csv", index=False)
 df_soundscape_test.to_csv("soundscape_test.csv", index=False)
 
 
