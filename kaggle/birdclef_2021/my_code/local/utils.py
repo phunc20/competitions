@@ -246,4 +246,31 @@ def birds_to_ndarray(series):
             ndarray[i] = row_i
     return ndarray
 
+def cyclicize_number(number, max_, min_):
+    """
+    args
+        number, int
+            \in {min_, min_ + 1, ..., max_}
+            e.g. hour => min_ = 0, max_ = 24
+                 longitude => min_ = -180, max_ = 180
+        max_, int
+        min_, int
+    return
+        (x, y), tuple of float
+    """
+    period = max_ - min_
+    theta = 2 * np.pi * (number / period)
+    #theta = 2 * np.pi * ((number - min_) / period)
+    x = np.cos(theta)
+    y = np.sin(theta)
+    return x, y
+
+# N.B. Using the next function to deal with df_train_soundscape is
+#      not efficient, since there are only 4 distinct longitudes.
+def cyclicize_series(series, max_, min_):
+    return list(map(lambda number: cyclicize_number(number, max_, min_), series))
+
+
+
+
 
