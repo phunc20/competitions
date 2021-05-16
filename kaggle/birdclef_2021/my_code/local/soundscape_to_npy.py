@@ -34,18 +34,56 @@ for location, coordinate in D_location_coordinate.items():
     df_train_soundscape.loc[location_filter, "longitude"] = lo
     df_train_soundscape.loc[location_filter, "latitude"] = la
 
-df_train_soundscape[["longitude_x", "longitude_y"]] = cyclicize_series(df_train_soundscape["longitude"], 180, -180)
 
 df_train_soundscape[["month_x", "month_y"]] = cyclicize_series(df_train_soundscape["month"], 12, 0)
-df_train_soundscape[["month", "month_x", "month_y"]]
 
+df_train_soundscape[["day_coarse_x", "day_coarse_y"]] = cyclicize_series(df_train_soundscape["day"], 31, 0)
+
+df_train_soundscape[["longitude_x", "longitude_y"]] = cyclicize_series(df_train_soundscape["longitude"], 180, -180)
 
 df_train_soundscape["latitude_normalized"] = df_train_soundscape["latitude"] / 90
 
-chosen_features = [
+soundscape_features = [
+        "month_x",
+        "month_y",
+        "day_coarse_x",
+        "day_coarse_y",
         "longitude_x",
         "longitude_y",
-        #"latitude_normalized",
+        "latitude_normalized",
 ]
 
+########################################################
+##  StratifiedShuffleSplit does not allow value_counts 1
+########################################################
+##  df_train_soundscape["n_birds"].value_counts()
+##  0    1529
+##  1     627
+##  2     183
+##  3      55
+##  4       5
+##  5       1
+##  Name: n_birds, dtype: int64
+df_5_birds = df_train_soundscape[df_train_soundscape["n_birds"] == 5]
+df_le_4_birds = df_train_soundscape.drop(index=[1974])
+df_le_4_birds.reset_index(drop=True, inplace=True)
 
+
+soundscape_split1 = StratifiedShuffleSplit(test_size=400, random_state=SEED)
+for tv_indices, test_indices in soundscape_split1.split(df_le_4_birds, df_le_4_birds["n_birds"]):
+    df_soundscape_train_val = df_le_4_birds.loc[tv_indices]
+    df_soundscape_test = df_le_4_birds.loc[test_indices]
+
+df_soundscape_train_val.reset_index(drop=True, inplace=True)
+#soundscape_split2 = StratifiedShuffleSplit(test_size=400, random_state=SEED)
+for train_indices, val_indices in soundscape_split1.split(df_soundscape_train_val, df_soundscape_train_val["n_birds"]):
+    df_soundscape_train = df_soundscape_train_val.loc[train_indices]
+    df_soundscape_val = df_soundscape_train_val.loc[val_indices]
+
+
+
+
+
+####################
+## Scripting Area ##
+####################
