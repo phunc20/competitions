@@ -56,7 +56,7 @@ val_npy.mkdir(exist_ok=True)
 for filename in df_train["npy_filename"]:
     shutil.move(shortaudio_npy_tmp / filename, train_npy / filename)
 
-for filename in df_test["npy_filename"]:
+for filename in df_val["npy_filename"]:
     shutil.move(shortaudio_npy_tmp / filename, val_npy / filename)
 
 df_train.to_csv("shortaudio_train.csv", index=False)

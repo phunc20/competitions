@@ -126,69 +126,6 @@ def audio_to_mels(audio,
     mels = standardize_uint8(mel_spec_computer(audio))
     return mels
 
-#def every_5sec(id_,
-#               sr=SR,
-#               resample=True,
-#               res_type="kaiser_fast",
-#               single_process=True,
-#               save_to=Path("corbeille"),
-#               n_workers=2
-#                ):
-#    """
-#    - read the audio file of ID `id_`
-#    - cut the read audio into pieces of 5 seconds
-#    - convert each piece into `.npy` file and save
-#    """
-#    path_ogg = next((PATH_DATASET / "train_soundscapes").glob(f"{id_}*.ogg"))
-#    location = (path_ogg.name).split("_")[1]
-#    whole_audio, orig_sr = soundfile.read(path_ogg, dtype="float32")
-#    if resample and orig_sr != sr:
-#        whole_audio = librosa.resample(whole_audio, orig_sr, sr, res_type=res_type)
-#    n_samples = len(whole_audio)
-#    n_samples_5sec = sr * 5
-#    save_to.mkdir(exist_ok=True)
-#
-#    def convert_and_save(i):
-#        audio_i = whole_audio[i:i + n_samples_5sec]
-#        mels_i = audio_to_mels(audio_i)
-#        path_i = save_to / f"{id_}_{location}_{((i + n_samples_5sec) // n_samples_5sec) * 5}.npy"
-#        np.save(str(path_i), mels_i)
-#
-#    if single_process:
-#        for i in range(0, n_samples - n_samples % n_samples_5sec, n_samples_5sec):
-#            #audio_i = whole_audio[i:i + n_samples_5sec]
-#            ## No need the next check because in range() we have subtracted the remainder.
-#            ## That is, len(audio_i) is guaranteed to be n_samples_5sec for all i.
-#            ##if len(audio_i) < n_samples_5sec:
-#            ##    pass
-#            #mels_i = audio_to_mels(audio_i)
-#            #path_i = save_to / f"{id_}_{location}_{((i + n_samples_5sec) // n_samples_5sec) * 5}.npy"
-#            #np.save(str(path_i), mels_i)
-#            convert_and_save(i)
-#    else:
-#        pool = joblib.Parallel(n_workers)
-#        mapping = joblib.delayed(convert_and_save)
-#        tasks = (mapping(i) for i in range(0, n_samples - n_samples % n_samples_5sec, n_samples_5sec))
-#        pool(tasks)
-#
-#def soundscapes_to_npy(is_test=False, n_processes=4):
-#    pool = joblib.Parallel(n_processes)
-#    mapping = joblib.delayed(every_5sec)
-#    if is_test:
-#        tasks = list(mapping(id_, save_to=testSoundScapes) for id_ in S_testSoundScapeIDs)
-#        #tasks = list(mapping(id_,
-#        #                     single_process=False,
-#        #                     save_to=testSoundScapes)
-#        #             for id_ in S_testSoundScapeIDs)
-#    else:
-#        tasks = list(mapping(id_, save_to=trainSoundScapes) for id_ in S_trainSoundScapeIDs)
-#        #tasks = list(mapping(id_,
-#        #                     single_process=False,
-#        #                     save_to=trainSoundScapes)
-#        #             for id_ in S_trainSoundScapeIDs)
-#    pool(tqdm(tasks))
-
-
 def audios_to_npy(L_ogg_paths,
                   n_processes=4,
                   sr=SR,
@@ -283,8 +220,4 @@ def cyclicize_number(number, max_, min_):
 #      not efficient, since there are only 4 distinct longitudes.
 def cyclicize_series(series, max_, min_):
     return list(map(lambda number: cyclicize_number(number, max_, min_), series))
-
-
-
-
 

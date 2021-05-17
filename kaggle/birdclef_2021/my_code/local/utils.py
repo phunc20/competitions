@@ -1,5 +1,6 @@
 from pathlib import Path
-from tqdm.notebook import tqdm
+#from tqdm.notebook import tqdm
+from tqdm import tqdm
 import librosa
 import librosa.display
 import numpy as np

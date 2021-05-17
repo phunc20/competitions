@@ -129,12 +129,3 @@ pool(tqdm(mv_test_tasks))
 df_soundscape_train.to_csv("soundscape_train.csv", index=False)
 df_soundscape_val.to_csv("soundscape_val.csv", index=False)
 df_soundscape_test.to_csv("soundscape_test.csv", index=False)
-
-
-####################
-## Scripting Area ##
-####################
-#soundscape_npy_tmp = Path("soundscape_npy_tmp")
-#soundscape_npy_tmp.mkdir(exist_ok=True)
-#soundscape_npy_tmp.exists()
-
