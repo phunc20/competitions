@@ -12,7 +12,7 @@ import random
 import os
 from collections import namedtuple
 
-
+EPSILON = 1e-6
 SR = 32_000
 DURATION = 5
 SEED = 42
